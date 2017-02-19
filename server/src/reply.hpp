@@ -5,22 +5,21 @@
 #include <vector>
 #include <boost/asio.hpp>
 
-namespace fserver {
-
-struct reply
+namespace fserver
 {
-  enum status_type
-  {
-    ok = 1,
-    exist = 2,
-    create_error = 3,
-    write_error= 4,
-    error= 5,
-  } status;
 
-  std::vector<boost::asio::const_buffer> to_buffers();
+struct reply {
+    enum status_type {
+        ok = 1,
+        exist = 2,
+        create_error = 3,
+        write_error= 4,
+        error= 5,
+    } status;
 
-  static reply stock_reply(status_type status);
+    std::vector<boost::asio::const_buffer> to_buffers();
+
+    static reply stock_reply(status_type status);
 };
 
 } // namespace fserver

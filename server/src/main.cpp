@@ -7,8 +7,7 @@ namespace po =  boost::program_options;
 int main(int argc, char* argv[])
 {
 
-    po::options_description desc("Usage: fserver <address> <port> <threads> <directory>\n  " 
-           "./fserver --host = localhost --port = 9999 --net_threads = 4 -- io_threads = 2 --directory = ./");
+    po::options_description desc("./fserver --host = localhost --port = 9999 --net_threads = 4 -- io_threads = 2 --directory = ./");
     desc.add_options()
     ("help", "produce help message")
     ("host", po::value<string>(), "ip or hostname")
@@ -20,21 +19,20 @@ int main(int argc, char* argv[])
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);    
+    po::notify(vm);
 
     if (vm.count("help")) {
-       cout << desc << "\n";
-       return 1;
+        cout << desc << "\n";
+        return 1;
     }
 
 
-    string hostname{"localhost"};
-    string port{"9999"};
-    int net_threads{1};
+    string hostname {"localhost"};
+    string port {"9999"};
+    int net_threads {1};
     int io_threads = 1;
     string directory = "./";
-  try
-  {
+    try {
         if (vm.count("host")) {
             hostname =  vm["host"].as<string>() ;
         }
@@ -59,11 +57,9 @@ int main(int argc, char* argv[])
         std::cout << "  io_threads:      " << io_threads << endl;
 
         s.run();
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << "exception: " << e.what() << "\n";
-  }
+    } catch (std::exception& e) {
+        std::cerr << "exception: " << e.what() << "\n";
+    }
 
-  return 0;
+    return 0;
 }

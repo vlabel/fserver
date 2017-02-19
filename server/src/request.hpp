@@ -7,14 +7,14 @@
 #include <memory>
 #include "boost/array.hpp"
 
-namespace fserver{
-
-struct request
+namespace fserver
 {
-  std::string file_name;
-  size_t file_size = 0;
-  std::unique_ptr<std::vector<char> > data;
-  size_t bytes_received = 0;
+
+struct request {
+    std::string file_name;
+    size_t file_size = 0;
+    std::unique_ptr<std::vector<char> > data;
+    size_t bytes_received = 0;
 };
 
 } // namespace fserver

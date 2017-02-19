@@ -7,7 +7,7 @@ Server
 
         dependencies: boost_system, boost_thread, boost_program_options
 
-        cd ./src
+        cd ./server
         cmake ./
         make
 
