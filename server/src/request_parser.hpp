@@ -17,6 +17,9 @@ namespace fserver
 class request_parser
 {
 public:
+    /**
+     * @brief ctor   parse message header or send file_read state
+     */
     request_parser();
 
     void reset();
@@ -27,13 +30,12 @@ public:
     {
         while (begin < end) {
             if (state_ != file_read) {
-//        cout << "Consume " << *begin;
-                boost::tribool result = consume(req, *begin++);
+                boost::tribool result = consume(req, *begin++);  //  parse header
                 if (result || !result)
                     return result;
             } else if ((req.file_size != 0) and (req.bytes_received < req.file_size)) {
-                req.data.reset(new std::vector<char>());
-                std::copy(begin,end,back_inserter(*req.data));
+                req.data.reset(new std::vector<char>());    // create vector to store data
+                std::copy(begin,end,back_inserter(*req.data)); // copy into it -> possible optimize here
                 req.bytes_received += std::distance(begin,end);
                 begin = end;
             }
@@ -52,9 +54,9 @@ private:
 
     /// The current state of the parser.
     enum state {
-        filename,
+        filename,   // next symbol is filename
         size,
-        file_read
+        file_read   //receive  data -> file body
     } state_;
 };
 

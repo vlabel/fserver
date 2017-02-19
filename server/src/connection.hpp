@@ -21,6 +21,13 @@ class connection
       private boost::noncopyable
 {
 public:
+    /**
+     * @brief ctor from inconmint connection class 
+     *
+     * @param net_service  thread and boost::io_service for networking 
+     * @param storage_service thread and boost::io_service for io 
+     * @param directory root dir for files
+     */
     explicit connection(boost::asio::io_service& net_service,
                         boost::asio::io_service* storage_service,
                         const std::string & directory );
@@ -28,20 +35,26 @@ public:
     boost::asio::ip::tcp::socket& socket();
 
     void start();
+
+    /**
+     * @brief send reply to client - called by storage_handler
+     *
+     * @param reply::status_type
+     */
     void send_reply(reply::status_type);
     std::atomic<bool> fail {false};
 
 private:
     void handle_read(const boost::system::error_code& e,
                      std::size_t bytes_transferred);
-    void handle_write(const boost::system::error_code& e);
+    void handle_write(const boost::system::error_code& e);  // read & write callbacks
 
     boost::asio::ip::tcp::socket socket_;
-    boost::array<char, BUFFER_SIZE> buffer_;
+    boost::array<char, BUFFER_SIZE> buffer_; // buffer for incoming data
     request request_;
-    request_parser request_parser_;
+    request_parser request_parser_;          // halper for parsing header
     reply reply_;
-    storage_handler storage_h;
+    storage_handler storage_h;               // io operations
     std::string directory_;
 };
 

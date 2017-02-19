@@ -12,24 +12,44 @@ typedef boost::shared_ptr<boost::asio::io_service> io_service_ptr;
 typedef boost::shared_ptr<boost::asio::io_service::work> work_ptr;
 
 enum service_type {
-    net_service,
-    storage_service,
+    net_service,     // separeted thread and boost::io for networking
+    storage_service, // separeted thread and boost::io for disk io
 };
 
 class io_service_pool
     : private boost::noncopyable
 {
 public:
+    /**
+     * @brief ctor
+     *
+     * @param net_services        size for networking pool 
+     * @param storage_services    size for storage pool
+     */
     explicit io_service_pool(std::size_t net_services,std::size_t storage_services);
 
+    //thread are really created here
     void run();
 
     void stop();
 
+    /**
+     * @brief get io_service -> scaled by round robin
+     *
+     * @param type  io or networking
+     *
+     * @return reference to io_service
+     */
     boost::asio::io_service& get_service(service_type type = service_type::net_service);
 
 private:
 
+    /**
+     * @brief assing io_service::work
+     *
+     * @param pool - ref to pool
+     * @param size
+     */
     void init_pool(std::vector<io_service_ptr> &pool, size_t size);
 
     std::vector<io_service_ptr> net_services_;
@@ -37,7 +57,7 @@ private:
 
     std::vector<work_ptr> work_;
 
-    std::size_t next_net_service_;
+    std::size_t next_net_service_;  // for round robin 
     std::size_t next_storage_service_;
 };
 

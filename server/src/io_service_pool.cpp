@@ -30,6 +30,8 @@ void io_service_pool::init_pool(std::vector<io_service_ptr> &pool, size_t size)
     }
 }
 
+
+
 void io_service_pool::run()
 {
     std::vector<boost::shared_ptr<boost::thread> > threads;
@@ -45,6 +47,9 @@ void io_service_pool::run()
         threads[i]->join();
 }
 
+/**
+ * @brief stop boost io_services ->  thread will join
+ */
 void io_service_pool::stop()
 {
     for (std::size_t i = 0; i < net_services_.size(); ++i)
