@@ -44,7 +44,6 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
     if (fail) return;
     if (! is_inited()) {
         connection->send_reply(reply::status_type::error);
-        //errr
         return;
     }
 
