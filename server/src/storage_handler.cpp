@@ -18,6 +18,11 @@ storage_handler::storage_handler(boost::asio::io_service* srv)
 }
 
 
+/**
+ * @brief only new files and opened files 
+ *
+ * @return 
+ */
 bool storage_handler::open_or_create()
 {
     if (!o_stream_.is_open()) { 
@@ -48,7 +53,7 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
     }
 
     if (open_or_create()) {
-        o_stream_.write(data->data(),data->size());
+        o_stream_.write(data->data(),data->size());      
         if (o_stream_.bad()) {
             cout << "[storage_handler] write ERROR" << endl;
             inited_ = false;
@@ -71,9 +76,7 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
 
 void storage_handler::write(connection_ptr connection, data_array_sh_ptr data )
 {
-    cout << "[storage_handler] write " << fail << endl;
-    if (fail) return;
-    if (! is_inited()) {
+    if ((fail) or (!is_inited())) {
         return;
     }
     io_service->post(std::bind(&storage_handler::handle_write,this,connection,data));

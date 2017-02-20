@@ -20,6 +20,11 @@ class storage_handler
     : private boost::noncopyable
 {
 public:
+    /**
+     * @brief main class for io operations, run in its own thread
+     *
+     * @param io_service
+     */
     explicit storage_handler(boost::asio::io_service* io_service);
     void write(connection_ptr connection, data_array_sh_ptr );
     void handle_write(connection_ptr connection, data_array_sh_ptr );
@@ -36,11 +41,11 @@ public:
     }
     std::atomic<bool> fail {false};
 private:
-    bool inited_ = false;
+    bool inited_ = false;       // flag for error heandling
     size_t bytes_written_ = 0;
     size_t file_size_ = 0;
     std::string filename_ = "";
-    boost::asio::io_service *io_service;
+    boost::asio::io_service *io_service;  
     std::ofstream o_stream_;
     bool open_or_create();
     void on_error();

@@ -36,13 +36,12 @@ void connection::start()
 void connection::handle_read(const boost::system::error_code& e,
                              std::size_t bytes_transferred)
 {
-    if (e) {
+    if (e or (bytes_transferred == 0)) {
         cout << "[connection] ERROR " << e.message() << endl;
         storage_h.fail = true;
         return;
     }
 
-    cout << "[connection] handle_read" <<  endl;
     if (fail) return;          // check atomic fail flag, to skip async operations in case of error
     boost::tribool result;     // true -> parsed,  false - error,  undeterm - need more data
 
