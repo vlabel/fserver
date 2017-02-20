@@ -20,13 +20,7 @@ class io_service_pool
     : private boost::noncopyable
 {
 public:
-    /**
-     * @brief ctor
-     *
-     * @param net_services        size for networking pool 
-     * @param storage_services    size for storage pool
-     */
-    explicit io_service_pool(std::size_t net_services,std::size_t storage_services);
+    io_service_pool();
 
     //thread are really created here
     void run();

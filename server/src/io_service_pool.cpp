@@ -4,20 +4,20 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include "io_service_pool.hpp"
+#include "constants.hpp"
 
 
 namespace fserver
 {
 
-io_service_pool::io_service_pool(std::size_t net_size,
-                                 std::size_t storage_size)
+io_service_pool::io_service_pool()
     : next_net_service_(0),
       next_storage_service_(0)
 {
-    if ((net_size == 0) or (storage_size == 0))
+    if ((config::inst().net_threads == 0) or (config::inst().io_threads == 0))
         throw std::runtime_error("service_pool size is 0");
-    init_pool(net_services_, net_size);
-    init_pool(storage_services_, storage_size);
+    init_pool(net_services_, config::inst().net_threads);
+    init_pool(storage_services_, config::inst().io_threads);
 }
 
 void io_service_pool::init_pool(std::vector<io_service_ptr> &pool, size_t size)

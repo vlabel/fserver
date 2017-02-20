@@ -12,11 +12,11 @@ namespace fserver
 using namespace std;
 
 connection::connection(boost::asio::io_service& net_srv,
-                       boost::asio::io_service* storage_srv,
-                       const std::string & dir)
+                       boost::asio::io_service* storage_srv
+                       )
     : socket_(net_srv),
       storage_h(storage_srv),
-      directory_(dir)
+      directory_(config::inst().directory)
 {
 }
 
@@ -37,6 +37,7 @@ void connection::handle_read(const boost::system::error_code& e,
                              std::size_t bytes_transferred)
 {
     if (!e) {
+        cout << "[connection] handle_read" <<  endl;
         if (fail) return;          // check atomic fail flag, to skin async opetation in case of error
         boost::tribool result;     // true -> parsed,  false - error,  undeterm - need more data
         result = request_parser_.parse(
@@ -47,6 +48,7 @@ void connection::handle_read(const boost::system::error_code& e,
             if (!storage_h.is_inited())  storage_h.init(request_.file_size,request_.file_name,directory_);
             storage_h.write(shared_from_this(),sh);
             if (request_.bytes_received == request_.file_size) {
+            cout << "[connection] handle_read2" <<  endl;
                 result = true; // while file received
             }
         }
@@ -71,6 +73,7 @@ void connection::handle_read(const boost::system::error_code& e,
 
 void connection::send_reply(reply::status_type type)
 {
+    if (fail) return;          // check atomic fail flag, to skin async opetation in case of error
     cout << "[connection] write reply " <<  endl;
     reply_.status = type;
     boost::asio::async_write(socket_, reply_.to_buffers(),
@@ -88,12 +91,11 @@ void connection::handle_write(const boost::system::error_code& e)
     if (!e) {
         boost::system::error_code ignored_ec;
         socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-        socket_.close();
     } else {
         cout << "[connection] ERROR " << e.message() << endl;
         storage_h.fail = true;
-        socket_.close();
     }
+        socket_.close();
 }
 
 } // namespace fserver

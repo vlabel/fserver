@@ -27,7 +27,7 @@ public:
     {
         return inited_;
     }
-    void init(size_t size, const std::string& filename,
+    void init(size_t size, std::string filename,
               const std::string& dir)
     {
         file_size_ = size;

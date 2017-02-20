@@ -2,6 +2,7 @@
 #include "request.hpp"
 
 #include <iostream>
+#include <locale>
 
 using namespace std;
 namespace fserver
@@ -21,10 +22,10 @@ boost::tribool request_parser::consume(request& req, char input)
 {
     switch (state_) {
     case filename:
-        if (!is_char(input) ||  is_tspecial(input)) {
+        if (!is_char(input)) {
             return false;
         } else if (input  != '\n')  {
-            req.file_name += std::string(&input);
+            req.file_name += std::string(&input,1);
             return boost::indeterminate;
         } else {
             state_ = size;
@@ -37,7 +38,7 @@ boost::tribool request_parser::consume(request& req, char input)
         } else if (input == '\n') {
             state_ = file_read;
             return boost::indeterminate;
-        } else if (!is_char(input) || is_ctl(input) || is_tspecial(input)) {
+        } else if (!is_char(input) || is_ctl(input) ) {
             return false;
         }
     default:
@@ -55,37 +56,10 @@ bool request_parser::is_ctl(int c)
     return (c >= 0 && c <= 31) || (c == 127);
 }
 
-bool request_parser::is_tspecial(int c)
+bool request_parser::is_digit(char c)
 {
-    switch (c) {
-    case '(':
-    case ')':
-    case '<':
-    case '>':
-    case '@':
-    case ',':
-    case ';':
-    case ':':
-    case '\\':
-    case '"':
-    case '/':
-    case '[':
-    case ']':
-    case '?':
-    case '=':
-    case '{':
-    case '}':
-    case ' ':
-    case '\t':
-        return true;
-    default:
-        return false;
-    }
-}
-
-bool request_parser::is_digit(int c)
-{
-    return c >= '0' && c <= '9';
+    std::locale loc;
+    return isdigit(c,loc);
 }
 
 }

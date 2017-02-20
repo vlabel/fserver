@@ -12,6 +12,7 @@ set (SRC
  ${SRC_DIR}/reply.cpp
  ${SRC_DIR}/connection.cpp
  ${SRC_DIR}/storage_handler.cpp
+ ${SRC_DIR}/constants.cpp
  ${SRC_DIR}/main.cpp)
 
 

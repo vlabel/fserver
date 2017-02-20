@@ -50,7 +50,7 @@ private:
     static bool is_char(int c);
     static bool is_ctl(int c);
     static bool is_tspecial(int c);
-    static bool is_digit(int c);
+    static bool is_digit(char c);
 
     /// The current state of the parser.
     enum state {

@@ -26,11 +26,9 @@ public:
      *
      * @param net_service  thread and boost::io_service for networking 
      * @param storage_service thread and boost::io_service for io 
-     * @param directory root dir for files
      */
-    explicit connection(boost::asio::io_service& net_service,
-                        boost::asio::io_service* storage_service,
-                        const std::string & directory );
+    connection(boost::asio::io_service& net_service,
+                        boost::asio::io_service* storage_service);
 
     boost::asio::ip::tcp::socket& socket();
 

@@ -20,19 +20,23 @@ storage_handler::storage_handler(boost::asio::io_service* srv)
 
 bool storage_handler::open_or_create()
 {
-    if (o_stream_.is_open()) return true;
-    o_stream_.open(filename_.c_str(),ios_base::out | ios_base::in) ;
-    if (o_stream_.is_open()) {
-        cout << "[storage_handler] "  << "ERROR Filename busy" << endl;
-        inited_ = false;
-        return false;
-    }
+    if (!o_stream_.is_open()) { 
+        o_stream_.open(filename_.c_str(),ios_base::out | ios_base::in) ;
+        if (o_stream_.is_open()) {
+            cout << "[storage_handler] "  << "ERROR Filename busy" << endl;
+            inited_ = false;
+            return false;
+        }
 
-    o_stream_.open(filename_.c_str(),ios_base::out ) ;
-    if (o_stream_.good() and o_stream_.is_open()) {
-        cout << "[storage_handler] "  << "File: " << filename_ << " created and opened" << endl;
-        return true;
+        o_stream_.open(filename_.c_str(),ios_base::out ) ;
+        if (o_stream_.good() and o_stream_.is_open()) {
+            cout << "[storage_handler] "  << "File: " << filename_ << " created and opened" << endl;
+        } else {
+            cout << "[storage_handler] "  << "ERROR can't open file" << endl;
+            return false;
+        }
     }
+    return true;
 }
 
 void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr data )
@@ -40,7 +44,6 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
     if (fail) return;
     if (! is_inited()) {
         connection->send_reply(reply::status_type::error);
-        connection->fail = true;
         //errr
         return;
     }
@@ -50,7 +53,6 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
         if (o_stream_.bad()) {
             cout << "[storage_handler] write ERROR" << endl;
             inited_ = false;
-            connection->fail = true;
             connection->send_reply(reply::status_type::error);
             return;
         }
@@ -63,7 +65,6 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
         }
     } else {
         cout << "[storage_handler] send status file_exist" << endl;
-        connection->fail = true;
         connection->send_reply(reply::status_type::exist);
     }
 
@@ -71,6 +72,7 @@ void storage_handler::handle_write(connection_ptr connection, data_array_sh_ptr 
 
 void storage_handler::write(connection_ptr connection, data_array_sh_ptr data )
 {
+    cout << "[storage_handler] write " << fail << endl;
     if (fail) return;
     if (! is_inited()) {
         return;

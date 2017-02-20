@@ -5,7 +5,7 @@ import sys, getopt, os
 
 def main(argv):
    inputfile = ''
-   newname =  '' 
+   newname =  ''
    TCP_IP = '127.0.0.1'
    TCP_PORT = 3434
    try:
@@ -40,8 +40,8 @@ def main(argv):
    message = newname+"\n"
    size = os.stat(inputfile).st_size
    message += str(size) + "\n"
-   print 'Header      : "',message 
-   s.send(message)
+   print 'Header      : "',message
+   s.send(message.encode('utf-8'))
    f = open (inputfile, "rb")
    l = f.read(BUFFER_SIZE)
    i = 0;

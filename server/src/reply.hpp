@@ -10,11 +10,11 @@ namespace fserver
 
 struct reply {
     enum status_type {
-        ok = 1,
-        exist = 2,
-        create_error = 3,
-        write_error= 4,
-        error= 5,
+        ok ,
+        exist ,
+        create_error ,
+        write_error ,
+        error ,
     } status;
 
     std::vector<boost::asio::const_buffer> to_buffers();

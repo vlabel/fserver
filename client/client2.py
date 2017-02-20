@@ -2,6 +2,9 @@ import socket
 import struct
 import threading
 import Queue
+import sys
+import getopt
+import os
 
 
 class ClientCommand(object):
@@ -21,13 +24,15 @@ class ClientReply(object):
 
 
 class SocketClientThread(threading.Thread):
-    def __init__(self, cmd_q=None, reply_q=None):
+    def __init__(self, file, filename,  cmd_q=None):
         super(SocketClientThread, self).__init__()
         self.cmd_q = cmd_q or Queue.Queue()
-        self.reply_q = reply_q or Queue.Queue()
         self.alive = threading.Event()
         self.alive.set()
         self.socket = None
+        self.file = file
+        self.filename = filename
+        self.filename_gen = 0
 
         self.handlers = {
             ClientCommand.CONNECT: self._handle_CONNECT,
@@ -43,7 +48,7 @@ class SocketClientThread(threading.Thread):
                 cmd = self.cmd_q.get(True, 0.1)
                 self.handlers[cmd.type](cmd)
             except Queue.Empty as e:
-                continue
+                return
 
     def join(self, timeout=None):
         self.alive.clear()
@@ -54,35 +59,31 @@ class SocketClientThread(threading.Thread):
             self.socket = socket.socket(
                 socket.AF_INET, socket.SOCK_STREAM)
             self.socket.connect((Config.TCP_IP, Config.TCP_PORT))
-            self.reply_q.put(self._success_reply())
         except IOError as e:
-            self.reply_q.put(self._error_reply(str(e)))
+            pass
 
     def _handle_CLOSE(self, cmd):
         self.socket.close()
         reply = ClientReply(ClientReply.SUCCESS)
-        self.reply_q.put(reply)
 
     def _handle_SEND(self, cmd):
-        header = struct.pack('<L', len(cmd.data))
+        filename_ending =  "" if self.filename_gen == 0 else str(self.filename_gen)
+        self.filename_gen += 1
+        message = self.filename + filename_ending +"\n"
+        message += str(len(self.file)) + "\n"
+        print 'Header      : "',message
+        self.socket.send(message.encode('utf-8'))
         try:
-            self.socket.sendall(header + cmd.data)
-            self.reply_q.put(self._success_reply())
+            self.socket.sendall(self.file)
         except IOError as e:
-            self.reply_q.put(self._error_reply(str(e)))
+            pass
 
     def _handle_RECEIVE(self, cmd):
         try:
-            header_data = self._recv_n_bytes(4)
-            if len(header_data) == 4:
-                msg_len = struct.unpack('<L', header_data)[0]
-                data = self._recv_n_bytes(msg_len)
-                if len(data) == msg_len:
-                    self.reply_q.put(self._success_reply(data))
-                    return
-            self.reply_q.put(self._error_reply('Socket closed prematurely'))
+            data = self.socket.recv(1024)
+            print "Receive ",data
         except IOError as e:
-            self.reply_q.put(self._error_reply(str(e)))
+            pass
 
     def _recv_n_bytes(self, n):
         data = ''
@@ -102,10 +103,10 @@ class SocketClientThread(threading.Thread):
 
 class Config:
    inputfile = ''
-   newname =  '' 
+   newname =  ''
    TCP_IP = '127.0.0.1'
    TCP_PORT = 3434
-   clients = 1 
+   clients = 1
 
 
 
@@ -140,8 +141,23 @@ def main(argv):
    if Config.newname == '':
        Config.newname = os.path.basename(Config.inputfile)
 
+   f = open (Config.inputfile, "rb")
+   wholefile = f.read()
+   threads = []
+   for j in range(Config.clients):
+        q = Queue.Queue()
+        for i in range(1000):
+                q.put(ClientCommand(ClientCommand.CONNECT))
+                q.put(ClientCommand(ClientCommand.SEND))
+                q.put(ClientCommand(ClientCommand.RECEIVE))
+                q.put(ClientCommand(ClientCommand.CLOSE))
 
+        thread = SocketClientThread(wholefile, Config.newname+str(j), q)
+        thread.start()
+        threads.append(thread)
 
+   while all([thread.isAlive() for thread in threads]):
+       pass
 
 if __name__ == "__main__":
    main(sys.argv[1:])
