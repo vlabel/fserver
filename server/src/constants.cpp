@@ -1,6 +1,7 @@
 #include "constants.hpp"
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 namespace fserver {
 
@@ -17,7 +18,7 @@ namespace po =  boost::program_options;
    
 
 
-    bool config::parse_confs(int argc, char* argv[])
+    void config::parse_confs(int argc, char* argv[])
     {
         po::options_description desc("./fserver --host = localhost --port = 9999 --net_threads = 4 -- io_threads = 2 --directory = ./");
         desc.add_options()
@@ -29,38 +30,34 @@ namespace po =  boost::program_options;
         ("directory", po::value<std::string>(), "root directory for storage")
         ;
 
-        try {
-            po::variables_map vm;
-            po::store(po::parse_command_line(argc, argv, desc), vm);
-            po::notify(vm);
+        po::variables_map vm;
+        po::store(po::parse_command_line(argc, argv, desc), vm);
+        po::notify(vm);
 
-            if (vm.count("help")) {
-                std::cout << desc << "\n";
-                return false;    
-            }
-
-
-            if (vm.count("host")) {
-                config::hostname =  vm["host"].as<std::string>() ;
-            }
-            if (vm.count("port")) {
-                config::port =  vm["port"].as<std::string>() ;
-            }
-            if (vm.count("net_threads")) {
-                config::net_threads =  vm["net_threads"].as<int>() ;
-            }
-            if (vm.count("io_threads")) {
-                config::io_threads =  vm["io_threads"].as<int>() ;
-            }
-            if (vm.count("directory")) {
-                config::directory =  vm["directory"].as<std::string>() ;
-            }
-        } catch (po::error& e) {
-                std::cerr << "exception: " << e.what() << "\n";
-                return false;
+        if (vm.count("help")) {
+            std::cout << desc << "\n";
+            return ;    
         }
 
-        return true;
+
+        if (vm.count("host")) {
+            config::hostname =  vm["host"].as<std::string>() ;
+        }
+        if (vm.count("port")) {
+            config::port =  vm["port"].as<std::string>() ;
+        }
+        if (vm.count("net_threads")) {
+            config::net_threads =  vm["net_threads"].as<int>() ;
+        }
+        if (vm.count("io_threads")) {
+            config::io_threads =  vm["io_threads"].as<int>() ;
+        }
+        if (vm.count("directory")) {
+            config::directory =  vm["directory"].as<std::string>() ;
+        }
+        if (!boost::filesystem::exists(config::directory)) {
+                throw std::runtime_error("no such directory");
+        }
     }
 
 

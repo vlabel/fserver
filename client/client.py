@@ -167,7 +167,7 @@ def main(argv):
         thread.start()
         threads.append(thread)
 
-   while all([thread.isAlive() for thread in threads]):
+   while any([thread.isAlive() for thread in threads]):
        pass
 
 if __name__ == "__main__":

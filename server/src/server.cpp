@@ -59,6 +59,7 @@ void server::handle_accept(const boost::system::error_code& e)
 
 void server::handle_stop()
 {
+        std::cerr << "[server] ERROR" << endl;
     io_service_pool_.stop();
 }
 

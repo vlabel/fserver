@@ -27,7 +27,7 @@ class config {
       return config;
     }
     void print_confs(); 
-    bool parse_confs(int argc, char* argv[]);
+    void parse_confs(int argc, char* argv[]);
 
     std::string hostname = "localhost";
     std::string port = "9999";

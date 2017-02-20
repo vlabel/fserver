@@ -14,8 +14,8 @@ io_service_pool::io_service_pool()
     : next_net_service_(0),
       next_storage_service_(0)
 {
-    if ((config::inst().net_threads == 0) or (config::inst().io_threads == 0))
-        throw std::runtime_error("service_pool size is 0");
+    if ((config::inst().net_threads < 1) or (config::inst().io_threads < 1))
+        throw std::runtime_error("service_pool size is < -1");
     init_pool(net_services_, config::inst().net_threads);
     init_pool(storage_services_, config::inst().io_threads);
 }

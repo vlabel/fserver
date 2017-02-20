@@ -29,13 +29,17 @@ Client
     Usage:
 
         python client.py --help	
-        client.py -i <inputfile> -n <newname> -h <host> -p <port>
+        client.py -i <inputfile> -n <newname> -h <host> -p <port>  -c <clients number>
 
-
+    if clients_number > 1:
+        client sends clients_number files by clients_number tcp connections 
 
 Examples:
 
     ./fserver --host localhost --port 9999 --net_threads 4 --io_threads 2 --directory ./files
+
      python ./client.py   -p 9999 -i /media/sf_coursera/big.avi -n newfile
+
+     python ./client.py   -p 9999 -i /media/sf_coursera/big.avi -n newfile - c 10      - : perf test mode
  
 
