@@ -24,6 +24,6 @@ target_link_libraries(fserver boost_system boost_thread pthread boost_program_op
 add_test(test1 fserver --host ddlocalhost --port 9999 --net_threads 4 --io_threads 2 --directory ./)
 add_test(test2 fserver --host ddlocalhost --port 9999 --net_threads 4 --io_threads 2 --directory ./no_dir)
 add_test(test3 fserver --host ddlocalhost --port 23 --net_threads 4 --io_threads 2 --directory ./)
-add_test(test4 fserver --host ddlocalhost --port 999 --net_threads -1 --io_threads 2 --directory ./)
-add_test(test5 fserver --host ddlocalhost --port 23 --net_threads 4 --io_threads 0 --directory ./)
+add_test(test4 fserver --host ddlocalhost --port 9999 --net_threads -1 --io_threads 2 --directory ./)
+add_test(test5 fserver --host ddlocalhost --port 9999 --net_threads 4 --io_threads 0 --directory ./)
 
