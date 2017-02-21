@@ -28,8 +28,8 @@ Client
 
     Usage:
 
-        python client.py --help	
-        client.py -i <inputfile> -n <newname> -h <host> -p <port>  -c <clients number>
+        fclient.py --help	
+        fclient.py -i <inputfile> -n <newname> -h <host> -p <port>  -c <clients number>
 
     if clients_number > 1:
         client sends clients_number files by clients_number tcp connections 
@@ -38,8 +38,8 @@ Examples:
 
     ./fserver --host localhost --port 9999 --net_threads 4 --io_threads 2 --directory ./files
 
-     ./fclient.py   -p 9999 -i /media/video/big.avi -n newfile
+     ./fclient.py   -p 9999 -h localhost  -i /media/video/big.avi -n newfile
 
-     ./fclient.py   -p 9999 -i /media/video/big.avi -n newfile - c 10      - : perf test mode
+     ./fclient.py   -p 9999 -h localhost  -i /media/video/big.avi -n newfile -c 10      - : perf test mode
  
 
