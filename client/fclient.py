@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import socket
 import struct
 import threading
@@ -32,7 +33,7 @@ class ClientCommand(object):
 
 
 class SocketClientThread(threading.Thread):
-    BUFFER_SIZE = 1024 
+    BUFFER_SIZE = 1024
     def __init__(self, file, filename,  cmd_q=None):
         super(SocketClientThread, self).__init__()
         self.cmd_q = cmd_q or Queue.Queue()
@@ -121,15 +122,15 @@ class SocketClientThread(threading.Thread):
 
 
 def main(argv):
-   help_msg = 'client.py -i <inputfile> -n <newname> -h <host> -p <port> -c <clients> ' 
+   help_msg = 'client.py -i <inputfile> -n <newname> -h <host> -p <port> -c <clients> '
    try:
-       opts, args = getopt.getopt(argv,"i:n:a:p:c:",["ifile=","newname="])
+       opts, args = getopt.getopt(argv,"i:n:a:p:c:h:",["ifile=","newname="])
    except getopt.GetoptError:
        print help_msg
        sys.exit(2)
    for opt, arg in opts:
-      if opt == '-h':
-         print help_msg 
+      if opt == '--help':
+         print help_msg
          sys.exit()
       elif opt in ("-i", "--ifile"):
          Config.inputfile = arg
@@ -155,7 +156,7 @@ def main(argv):
    if Config.clients > 1:
        f = open (Config.inputfile, "rb")
        wholefile = f.read()
-   global threads 
+   global threads
    for j in range(Config.clients):
         q = Queue.Queue()
         q.put(ClientCommand(ClientCommand.CONNECT))
